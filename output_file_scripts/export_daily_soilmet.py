@@ -8,7 +8,7 @@
 """
 import sys
 # laptop
-sys.path.append( '/home/greg/current/NMEG_utils/py_modules/' )
+sys.path.append( 'C:/Code/NMEG_utils/py_modules/' )
 import load_nmeg as ld
 import transform_nmeg as tr
 import matplotlib.pyplot as plt
@@ -16,15 +16,17 @@ import datetime as dt
 import numpy as np
 import pandas as pd
 
-sm_path = '/home/greg/sftp/eddyflux/Soil_files/provisional/'
+sm_path = 'C:/Research_Flux_Towers/Ameriflux_files/processed_soil/'
 
 # Years to load
-startyr = 2007
-endyr = 2015
+startyr = 2016
+endyr = 2016
 # Sites to load
-sites = ['Seg', 'Ses', 'Sen', 'Wjs', 'Mpj', 'Mpg', 'Vcp', 'Vcm']
-altsites = ['GLand', 'SLand', 'New_GLand', 'JSav', 'PJ', 'PJ_girdle',
-	    'PPine', 'MCon']
+# sites = ['Seg', 'Ses', 'Sen', 'Wjs', 'Mpj', 'Mpg', 'Vcp', 'Vcm']
+# altsites = ['GLand', 'SLand', 'New_GLand', 'JSav', 'PJ', 'PJ_girdle',
+#	    'PPine', 'MCon']
+sites = ['Vcs']
+altsites = ['MCon_SS']
 
 # Fill a dict with multiyear dataframes for each site in sites
 hourly = { x : 
@@ -91,14 +93,16 @@ for i in range(0, 3):
 # There is a level shift in the soil water content data for SLand in May 2011
 # The code below removes the day of the shift and then shifts data from before
 # this so things match better (only affects depth averages)
-daily['Ses'].shall_swc[daily['Ses'].index==dt.datetime(2011, 5, 23)] = np.nan
-daily['Ses'].mid_swc[daily['Ses'].index==dt.datetime(2011, 5, 23)] = np.nan
-daily['Ses'].deep_swc[daily['Ses'].index==dt.datetime(2011, 5, 23)] = np.nan
 
-idx = daily['Ses'].index < dt.datetime(2011, 5, 23)
-daily['Ses'].shall_swc[idx] = daily['Ses'].shall_swc[idx] + 0.022
-daily['Ses'].mid_swc[idx] = daily['Ses'].mid_swc[idx] - 0.025
-daily['Ses'].deep_swc[idx] = daily['Ses'].deep_swc[idx] - 0.037
+# UNCOMMENT LINES BELOW WHEN PROCESSING ALL SITES!
+
+#daily['Ses'].mid_swc[daily['Ses'].index==dt.datetime(2011, 5, 23)] = np.nan
+#daily['Ses'].deep_swc[daily['Ses'].index==dt.datetime(2011, 5, 23)] = np.nan
+#
+#idx = daily['Ses'].index < dt.datetime(2011, 5, 23)
+#daily['Ses'].shall_swc[idx] = daily['Ses'].shall_swc[idx] + 0.022
+#daily['Ses'].mid_swc[idx] = daily['Ses'].mid_swc[idx] - 0.025
+#daily['Ses'].deep_swc[idx] = daily['Ses'].deep_swc[idx] - 0.037
 
 # Append interpolated means for each depth range
 daily = { x : get_depth_mean_interp(daily[x], x) for x in daily.keys() }

@@ -55,6 +55,22 @@ def sum_30min_et( df, t_air ) :
     return df_int[ export_cname ]
 
 
+def sum_30min_sunhours( df ) :
+    """
+
+    Convert flags for sunny time periods (PAR > 800 mumol/m2/s) to 30 min values
+    to sum later in the resampling scheme. I don't know if this is the best way
+    to accomplish this, but this is my first time messing with this code and
+    python in general 
+
+    """
+
+    df_int = df.copy()
+    df_int['SUN_HR'] = df * 30/60
+
+    return df_int
+
+
 def get_daytime_et_pet( df, freq='1D',
         le_col='LE_F', tair_col='TA_F', sw_col='SW_IN_F', h_col='H_F'):
     """
@@ -123,9 +139,9 @@ def get_daytime_et_pet( df, freq='1D',
 
 
 def resample_30min_aflx( df, freq='1D', c_fluxes=[ 'GPP', 'RECO', 'FC_F' ], 
-        le_flux=[ 'LE_F' ], avg_cols=[ 'TA_F', 'RH_F', 'SW_IN_F', 'RNET_F' ],
+        le_flux=[ 'LE_F' ], avg_cols=[ 'TA_F', 'RH_F', 'SW_IN_F', 'NETRAD' ],
         minmax_cols=[ 'TA_F', 'VPD_F' ], int_cols=['LE_F', 'H_F'],
-        sum_cols=[ 'P_F' ] , tair_col='TA_F' ):
+        sum_cols=[ 'P_F' ] , tair_col='TA_F'  , sun_col = ['SUN_FLAG']):
     """
     Integrate 30 minute flux data into a daily (or longer) frequency file. C
     fluxes are converted from molar to mass flux and summed. Latent heat    
@@ -142,7 +158,7 @@ def resample_30min_aflx( df, freq='1D', c_fluxes=[ 'GPP', 'RECO', 'FC_F' ],
         int_cols    : list of header names (strings) to integrate (*1800)
 
         sum_cols    : list of header names (strings) to sum
-        tair_col    : air temperature header (string) used for ET calculation
+        tair_col    : aiThe HYDRUS-1D software package for simulating the one-dimensional movement of water, heat, and multiple solutes in variably-saturated mediar temperature header (string) used for ET calculation
 
     Return:
         df_resamp   : pandas dataframe with AF data at new frequency
@@ -152,9 +168,11 @@ def resample_30min_aflx( df, freq='1D', c_fluxes=[ 'GPP', 'RECO', 'FC_F' ],
     c_flux_sums = sum_30min_c_flux( df[ c_fluxes ] )
     # Calculate integrated ET
     et_flux_sum = sum_30min_et( df[ le_flux ], df[ tair_col ] )
+    # Convert sun_col (flag) to hours
+    SUN_HR = sum_30min_sunhours( df[ sun_col ] )
 
     # Subset site data into summable, averagable, etc data
-    df_sum = pd.concat( [ c_flux_sums, et_flux_sum, df[ sum_cols ]], 
+    df_sum = pd.concat( [ c_flux_sums, et_flux_sum, df[ sum_cols ] , SUN_HR], 
                           axis=1 );
     df_int = df[ int_cols ]*1800
     df_avg = df[ avg_cols ]

@@ -64,7 +64,7 @@ def load_aflx_file( fname, year, old_date_parse=False ) :
         # Use ISO date parse
         parsed_df =  pd.read_csv( fname, skiprows=( 0,1,2,3,4,5,7 ), header=0,
                 parse_dates={ 'Date': [0] },
-                na_values='-9999', index_col='Date' )
+                na_values='-9999',  index_col='Date' )
 
 
     # We will reindex to include every 30-min period during the given year,
@@ -112,7 +112,7 @@ def load_daily_aflx_file( fname ) :
 
     # We will reindex to include every 30-min period during all years,
     # from YR-01-01 00:30 to YR+1-01-01 00:00
-    full_idx = pd.date_range( '2007-01-01', '2016-01-01', freq = '1D')
+    full_idx = pd.date_range( '2007-01-01', '2017-01-01', freq = '1D')
 
     # Remove irregular data and reindex dataframes
     idxyrs = parsed_df.index.year > 2005;
