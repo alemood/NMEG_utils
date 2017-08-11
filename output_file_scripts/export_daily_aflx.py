@@ -32,7 +32,6 @@ hourly = { x :
             startyear=startyr, endyear=endyr) 
         for x in sites }
 
-
 # Resample to daily sums with integration
 daily = { x : 
         tr.resample_30min_aflx( hourly[x], freq='1D', 
