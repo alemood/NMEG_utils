@@ -18,24 +18,26 @@ pjcolour=[0.0, 0.5, 0.0];
 pjgcolour=[0.0, 0.85, 0.0];
 pcolour=[0.5, 0.5, 1.0];
 mcolour=[0.0, 0.0, 0.6];
+nmcolour=[0.3, 0.0, 0.5]
 
 # Full list of site codes
-allsites = ['Seg', 'Sen', 'Ses', 'Wjs', 'Mpj', 'Mpg', 'Vcp', 'Vcm']
+allsites = ['Seg', 'Sen', 'Ses', 'Wjs', 'Mpj', 'Mpg', 'Vcp', 'Vcm', 'Vcs']
 
 # Long site names (list and dict)
 sitenames = ['Grassland', 'New Grassland', 'Shrubland', 'Juniper Sav.', 
-        'Pinyon-Juniper', 'Girdled P-J', 'Ponderosa Pine', 'Mixed Conifer']
+        'Pinyon-Juniper', 'Girdled P-J', 'Ponderosa Pine', 'Mixed Conifer', 
+        'New Mixed Conifer']
 longnames = { x : sitenames[ allsites.index(x) ] for x in allsites }
 
 # Colors for plotting each site (list and dict)
 colours = [gcolour, ngcolour, scolour, jcolour, pjcolour,
-        pjgcolour, pcolour, mcolour]
+        pjgcolour, pcolour, mcolour, nmcolour]
 palette = { x : colours[ allsites.index(x) ] for x in allsites }
 
 
 # Standard plot for timeseries plots of a site dictionary
 def plot_tseries( dict_in, varname, texty, fighandle, ylab,
-        xlims=[ dt.datetime( 2007, 1, 1 ), dt.datetime( 2015, 12, 31 )],
+        xlims=[ dt.datetime( 2007, 1, 1 ), dt.datetime( 2016, 12, 31 )],
         ylims=None, sitenames=longnames,
         colors=palette):
     ax = list()
