@@ -19,14 +19,16 @@ import pandas as pd
 sm_path = 'C:/Research_Flux_Towers/Ameriflux_files/processed_soil/'
 
 # Years to load
-startyr = 2016
+startyr = 2007
 endyr = 2016
 # Sites to load
-# sites = ['Seg', 'Ses', 'Sen', 'Wjs', 'Mpj', 'Mpg', 'Vcp', 'Vcm']
-# altsites = ['GLand', 'SLand', 'New_GLand', 'JSav', 'PJ', 'PJ_girdle',
-#	    'PPine', 'MCon']
-sites = ['Vcs']
-altsites = ['MCon_SS']
+#sites = ['Seg', 'Ses', 'Sen', 'Wjs', 'Mpj', 'Mpg', 'Vcp', 'Vcm' , 'Vcs']
+#altsites = ['GLand', 'SLand', 'New_GLand', 'JSav', 'PJ', 'PJ_girdle',
+#	    'PPine', 'MCon','MCon_SS']
+#sites = ['Seg', 'Ses', 'Sen', 'Wjs', 'Vcp', 'Vcm', 'Vcs']
+#altsites = ['GLand', 'SLand', 'New_GLand', 'JSav', 'PPine', 'MCon', 'MCon_SS']
+sites = ['Mpj']
+altsites = ['PJ']
 
 # Fill a dict with multiyear dataframes for each site in sites
 hourly = { x : 
@@ -34,18 +36,55 @@ hourly = { x :
             startyear=startyr, endyear=endyr) 
         for x in altsites }
 
-# Resample to daily means
-daily = { x : hourly[x].resample('1D').mean()
-        for x in hourly.keys() }
-
-# Replace alternate sitenames with ameriflux style names
-for i, asite in enumerate(altsites):
-    daily[sites[i]] = daily.pop(asite)
-
 # Add 3 soil moisture columns of different depth ranges
 # Also interpolate over missing values
 depth_rng = [list(range(0, 6)), list(range(6, 23)), list(range(23, 66))]
 depth_str = ['shall', 'mid', 'deep']
+
+def get_depth_mean( df, var,  d_string, d_range ):
+    # Extract columns matching depth range
+    cols = [h for h in df.columns if var in h and 'tcor' not in h]
+    d_range = [str(i) for i in d_range] # Convert to string list
+    col_select = list()
+    for depth in d_range:
+        get_col = [k for k in cols if '_' + depth + 'p' in k 
+                or '_' + depth + '_' in k]
+        col_select = col_select + get_col
+    
+    # Calculate depth range SWC mean
+    df[d_string + '_swc'] = df[col_select].mean(axis=1, skipna=True)
+    
+    return(df)
+  
+    
+## Make night time and day time hourly files
+#         hourly['mynewkey'] = 'mynewvalue'
+## Calculate integrated c fluxes
+#c_flux_sums = sum_30min_c_flux( df[ c_fluxes ] )
+## Calculate day and night integrated c fluxes. KLUDGE. FIXME
+#c_night_flux = c_flux_sums.FC_F_g_int[ df.NIGHT_F == 1 ]
+#c_day_flux   = c_flux_sums.FC_F_g_int[ df.NIGHT_F == 0 ]
+         
+# Resample to daily means
+#daily = { x : hourly[x].resample('1D').mean()
+#        for x in hourly.keys() }:
+            
+daily = {}         
+for s in hourly.keys():
+    df = hourly[s]
+    df_shall = get_depth_mean(df, 'SWC', depth_str[0], depth_rng[0])
+    df['shall_swc_night'] = np.nan
+    df['shall_swc_day'] = np.nan
+    df.loc[df.NIGHT==1, 'shall_swc_night'] = df_shall.shall_swc[df.NIGHT==1]
+    df.loc[df.NIGHT==0, 'shall_swc_day'] = df_shall.shall_swc[df.NIGHT==0]
+    df.drop('shall_swc', 1, inplace=True)
+    df = df.resample('1D').mean()
+    daily[s] = df
+    
+# Replace alternate sitenames with ameriflux style names
+for i, asite in enumerate(altsites):
+    daily[sites[i]] = daily.pop(asite)
+
 
 def get_depth_mean( df, var,  d_string, d_range ):
     # Extract columns matching depth range
@@ -106,6 +145,7 @@ for i in range(0, 3):
 
 # Append interpolated means for each depth range
 daily = { x : get_depth_mean_interp(daily[x], x) for x in daily.keys() }
+#daily = { x :  }
 
 import subprocess as sp
 git_sha = sp.check_output(
