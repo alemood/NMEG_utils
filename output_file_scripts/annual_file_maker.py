@@ -1,8 +1,9 @@
 # Script to create and export data files for Marcy
 
 import sys
-sys.path.append( '/home/greg/current/NMEG_utils/py_modules/' )
-af_path = '/home/greg/sftp/eddyflux/Ameriflux_files/provisional/'
+sys.path.append( 'C:/Code/NMEG_utils/py_modules/' )
+af_path = 'C:/Research_Flux_Towers/Ameriflux_files/FLUXNET/NMEG/'
+
 
 import load_nmeg as ld
 import transform_nmeg as tr
@@ -15,17 +16,17 @@ import pdb as pdb
 
 
 # Years to load
-start = 2007
-end = 2015
+start = 2015
+end = 2017
 # Sites to load
 sites = ['Seg', 'Ses', 'Sen', 'Wjs', 'Mpj', 'Mpg', 'Vcp', 'Vcm']
-#sites = ['Mpj', 'Mpg']
+sites = ['Mpj']
 
 # Create a wateryear-based annual file?
 wyear= False
 wyear_days = 91
 #wyear_days = 60
-outfile = '../processed_data/annual_files/annual_NMEG_fluxes.csv'
+outfile = 'C:/Research_Flux_Towers/Ameriflux_files/FLUXNET/annual_files/annual_NMEG_fluxes.csv'
 
 
 # Load hourly data into multiyear dataframes (1/site) within a dict
@@ -64,7 +65,7 @@ yearly = { x :
          tr.resample_30min_aflx( hourly[x], freq='A', 
              c_fluxes=[ 'GPP', 'RECO', 'FC_F' ], 
              le_flux=[ 'LE_F' ], 
-             avg_cols=[ 'TA_F', 'RH_F', 'SW_IN_F', 'RNET_F', 'VPD_F'], 
+             avg_cols=[ 'TA_F', 'RH_F', 'SW_IN_F', 'NETRAD_F', 'VPD_F'], 
              sum_cols=[ 'P_F', 'n_obs' ] , tair_col='TA_F' )
          for x in hourly.keys() }
 

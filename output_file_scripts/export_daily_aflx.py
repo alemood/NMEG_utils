@@ -17,15 +17,18 @@ import datetime as dt
 # Name of the data release, set paths
 drelease =  'FLUXNET2015_b/NMEG' #'FLUXNET2015_a'
 
-af_path = 'C:/Research_Flux_Towers/Ameriflux_files/' + drelease + '/'
-outpath = 'C:/Code/NMEG_utils/processed_data/daily_aflx/' + drelease + '/'
+#af_path = 'C:/Research_Flux_Towers/Ameriflux_files/FLUXNET/NMEG/' + drelease + '/'
+af_path = 'C:/Research_Flux_Towers/Ameriflux_files/FLUXNET/NMEG/'
+#outpath = 'C:/Code/NMEG_utils/processed_data/daily_aflx/' + drelease + '/'
+outpath = 'C:/Research_Flux_Towers/Ameriflux_files/FLUXNET/daily_aflx/'
 
 # Years to load
-startyr = 2016
-endyr = 2016
+startyr = 2007
+endyr = 2017
 # Sites to load
-# sites = ['Seg', 'Ses', 'Sen', 'Wjs', 'Mpj', 'Mpg', 'Vcp', 'Vcm', 'Vcs']
-sites = ['Vcs']
+sites = ['Seg', 'Ses', 'Sen', 'Wjs', 'Mpj', 'Mpg', 'Vcp', 'Vcm', 'Vcs']
+#sites = ['Seg']
+#sites = ['Mpj']
 # Fill a dict with multiyear dataframes for each site in sites
 hourly = { x : 
         ld.get_multiyr_aflx( 'US-' + x, af_path, gapfilled=True,
@@ -40,7 +43,7 @@ daily = { x :
             avg_cols=[ 'TA_F', 'RH_F', 'SW_IN_F', 'NETRAD_F', 'VPD_F', 'PPFD_IN',
                 'LE_F', 'H_F' ],
             int_cols=['LE_F', 'H_F' ],
-            sum_cols=['P_F'], sun_col=['SUN_FLAG'], tair_col='TA_F' ) 
+            sum_cols=['P_F'],  tair_col='TA_F' ) 
         for x in hourly.keys() }
 
 # Add ET, PET and put into daily dataframes

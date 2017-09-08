@@ -113,8 +113,8 @@ get_daily_file <- function( site, type, make_new=FALSE ){
                      'export_daily_', type, '.py', sep=''))
     }
     # The daily files are put here:
-    dlypath <- paste('C:/Code/NMEG_utils/processed_data/daily_', 
-                     type,'/FLUXNET2015_c', sep='')
+    dlypath <- paste('C:/Research_Flux_Towers/Ameriflux_files/FLUXNET/daily_', 
+                     type, sep='')
     filenames <- list.files(dlypath, full.names=TRUE)
     filenames <- filenames[grepl(paste(site, '_daily_', type, '.csv', sep=''),
                                  filenames)]

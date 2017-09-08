@@ -144,7 +144,7 @@ def get_daytime_et_pet( df, freq='1D',
 def resample_30min_aflx( df, freq='1D', c_fluxes=[ 'GPP', 'RECO', 'FC_F' ], 
         le_flux=[ 'LE_F' ], avg_cols=[ 'TA_F', 'RH_F', 'SW_IN_F', 'NETRAD' ],
         minmax_cols=[ 'TA_F', 'VPD_F' ], int_cols=['LE_F', 'H_F'],
-        sum_cols=[ 'P_F' ] , tair_col='TA_F'  , sun_col = ['SUN_FLAG'] , night = ['NIGHT']):
+        sum_cols=[ 'P_F' , 'n_obs' ] , tair_col='TA_F'  ,  night = ['NIGHT']):
     """
     Integrate 30 minute flux data into a daily (or longer) frequency file. C
     fluxes are converted from molar to mass flux and summed. Latent heat    
@@ -177,11 +177,11 @@ def resample_30min_aflx( df, freq='1D', c_fluxes=[ 'GPP', 'RECO', 'FC_F' ],
     # Calculate integrated ET
     et_flux_sum = sum_30min_et( df[ le_flux ], df[ tair_col ] )
     # Convert sun_col (flag) to hours
-    SUN_HR = sum_30min_sunhours( df[ sun_col ] )
+   # SUN_HR = sum_30min_sunhours( df[ sun_col ] )
 
     # Subset site data into summable, averagable, etc data
-    df_sum = pd.concat( [ c_flux_sums, c_night_flux, c_day_flux, et_flux_sum, df[ sum_cols ] , SUN_HR], 
-                          axis=1 );                      
+    df_sum = pd.concat( [ c_flux_sums, c_night_flux, c_day_flux, et_flux_sum, df[ sum_cols ] ], 
+                          axis=1 );          
     df_int = df[ int_cols ]*1800
     df_avg = df[ avg_cols ]
     df_min = df[ minmax_cols ]
